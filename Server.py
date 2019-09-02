@@ -1,10 +1,11 @@
+
 from pyftpdlib.authorizers import DummyAuthorizer
 from pyftpdlib.handlers import FTPHandler
 from pyftpdlib.servers import FTPServer
 
 authorizer = DummyAuthorizer()
-authorizer.add_user("the doctor", "1234", "D:\\", perm="elradfmw")
-authorizer.add_anonymous("C:\\Users\\akis\\Desktop\\Python\\FTP Client-Server", perm="r")
+authorizer.add_user("the doctor", "1234", "/mnt/d/", perm="elradfmw")
+authorizer.add_anonymous("/mnt/c/Users/akis/Desktop/Python/FTP Client-Server", perm="r")
 
 handler = FTPHandler
 handler.authorizer = authorizer
