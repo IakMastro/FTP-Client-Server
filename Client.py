@@ -24,19 +24,21 @@ except:
 	exit()
 
 print(BLUE + "Connection successful!" + DEFAULT)
+ftp.voidcmd('TYPE i')
 
-print("commands: help, cd, ls, download, send, exit")
+print("commands: help, cd, ls, download, upload, exit")
 while True:
 	answer = input("$" + GREEN)
 	print(DEFAULT, end='')
+
 	if answer == "exit":
 		break
 
 	elif answer == "help":
 		print(GREEN + "cd" + DEFAULT + ":\t  change the directory. Type the path of the new directory")
 		print(GREEN + "ls" + DEFAULT + ":\t  print whatever is on the current directory")
-		print(GREEN + "donwload" + DEFAULT + ": download a file from the current directory")
-		print(GREEN + "send" + DEFAULT + ":\t  upload a file to the current directory")
+		print(GREEN + "download" + DEFAULT + ": download a file from the current directory")
+		print(GREEN + "upload" + DEFAULT + ":\t  upload a file to the current directory")
 		print(GREEN + "exit" + DEFAULT + ":\t  exit the program")
 
 	elif answer == "ls":
@@ -46,10 +48,33 @@ while True:
 
 	else:
 		try: 
-			answer = answer.split(' ', answer.find(' '))
-			print(answer[0], answer[1])
+			answer = answer.split(' ', 1)
 			if answer[0] == "cd":
-				ftp.cwd(answer[1])
+				try:
+					ftp.cwd(answer[1])
+
+				except:
+					print(RED + "This directory doesn't exist" + DEFAULT)
+
+			elif answer[0] == "download":
+				try:
+					with open(answer[1], "wb") as file:
+						print(BLUE + "Please wait while it's downloading" + DEFAULT)
+						ftp.retrbinary(f"RETR {answer[1]}", lambda data: file.write(data))
+						print(BLUE + "Finished the download" + DEFAULT)
+
+				except:
+					print(RED + "Couldn't download the file" + DEFAULT)
+
+			elif answer[0] == "upload":
+				try:
+					with open(answer[1], "rb") as file:
+						print(BLUE + "Please wait while it's uploading" + DEFAULT)
+						ftp.storbinary(f"STOR {answer[1]}", file)
+						print(BLUE + "Finished the upload" + DEFAULT)
+
+				except:
+					print(RED + "Couldn't upload the file" + DEFAULT)
 
 		except:
 			print(RED + "You have to give an argument as well" + DEFAULT)
