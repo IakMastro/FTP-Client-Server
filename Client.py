@@ -1,5 +1,7 @@
 from ftplib import FTP 
 from getpass import getpass
+from tqdm import tqdm
+import os
 
 BLUE = '\033[1;34m'
 RED = '\033[0;31m'
@@ -58,9 +60,14 @@ while True:
 
 			elif answer[0] == "download":
 				try:
-					with open(answer[1], "wb") as file:
+					with open(answer[1], 'wb') as file:
 						print(BLUE + "Please wait while it's downloading" + DEFAULT)
-						ftp.retrbinary(f"RETR {answer[1]}", lambda data: file.write(data))
+						with tqdm(leave = False, desc = "Downloading", unit = "bits", unit_scale = True,
+							total = ftp.size(file.name)) as tqdm_instance:
+							def callback(data):
+								tqdm_instance.update(len(data))
+								file.write(data)
+							ftp.retrbinary('RETR {}'.format(answer[1]), callback = callback)
 						print(BLUE + "Finished the download" + DEFAULT)
 
 				except:
@@ -70,7 +77,10 @@ while True:
 				try:
 					with open(answer[1], "rb") as file:
 						print(BLUE + "Please wait while it's uploading" + DEFAULT)
-						ftp.storbinary(f"STOR {answer[1]}", file)
+						with tqdm(leave = False, desc = "Uploading", unit = "bits", 
+							total = os.path.getsize(file.name)) as tqdm_instance:
+							ftp.storbinary(f"STOR {answer[1]}", file, 
+								callback = lambda sent: tqdm_instance.update(len(sent)))
 						print(BLUE + "Finished the upload" + DEFAULT)
 
 				except:
