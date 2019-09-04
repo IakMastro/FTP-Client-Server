@@ -26,11 +26,11 @@ except:
 	exit()
 
 print(BLUE + "Connection successful!" + DEFAULT)
-ftp.voidcmd('TYPE i')
 
 print("commands: help, cd, ls, download, upload, exit")
 while True:
 	answer = input("$" + GREEN)
+	ftp.voidcmd('TYPE i')
 	print(DEFAULT, end='')
 
 	if answer == "exit":
